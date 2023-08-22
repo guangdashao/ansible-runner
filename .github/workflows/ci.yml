@@ -70,13 +70,13 @@ jobs:
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
       - name: Run integration tests
         run: |
-          	docker buildx create --use --driver docker-container --name ansible_runner > /dev/null 2>&1 || true
-            docker buildx build --platform linux/arm64,linux/amd64 --push \
-              --no-cache --build-arg ANSIBLE_BRANCH=stable-2.9 \
-              -t shaogd/ansible-runner:release-2.3-stable-2.9 \
-              -f Dockerfile --provenance=false \
-              .
-            docker buildx rm ansible_runner || true
+          docker buildx create --use --driver docker-container --name ansible_runner > /dev/null 2>&1 || true
+          docker buildx build --platform linux/arm64,linux/amd64 --push \
+            --no-cache --build-arg ANSIBLE_BRANCH=stable-2.9 \
+            -t shaogd/ansible-runner:release-2.3-stable-2.9 \
+            -f Dockerfile --provenance=false \
+            .
+          docker buildx rm ansible_runner || true
 
 
 
