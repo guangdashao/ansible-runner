@@ -9,3 +9,4 @@ pexpect>=4.5
 python-daemon
 pyyaml
 six
+importlib_metadata

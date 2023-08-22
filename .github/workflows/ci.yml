@@ -63,14 +63,6 @@ jobs:
         with:
           python-version: ${{ matrix.py_version.name }}
 
-      - name: Install tox
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install "tox<4.0.0"
-
-      - name: Create tox environment
-        run: |
-          tox --notest
       - name: Log in to the Container registry
         uses: docker/login-action@v1.10.0
         with:
@@ -80,44 +72,7 @@ jobs:
         run: |
           docker build -t shaogd/ansible-runner:release-2.3 .
           docker push shaogd/ansible-runner:release-2.3
-          podman build --rm=true -t quay.io/ansible/ansible-runner:devel -t quay.io/ansible/ansible-runner:latest .
-          tox
-
-      - name: Upload coverage report
-        run: |
-          curl --silent --show-error --output codecov https://ansible-ci-files.s3.us-east-1.amazonaws.com/codecov/linux/codecov
-          chmod +x codecov
-          ./codecov --file test/coverage/reports/coverage.xml --flags {{ matrix.py_version.tox_env }}
-
-
-  unit:
-    name: Unit - ${{ matrix.py_version.name}}
-    runs-on: ubuntu-20.04
-    container:
-      image: quay.io/ansible/ansible-runner-test-container:2.0.0
-      env:
-        PIP_CACHE_DIR: ${{ runner.temp }}/.cache/pip
-        TOXENV: ${{ matrix.py_version.tox_env }}
-        PY_COLORS: 1
-
-    strategy:
-      fail-fast: false
-      matrix:
-        py_version:
-          - name: '3.8'
-            tox_env: unit-py38
 
 
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
 
-      - name: Create tox environment
-        run: tox --notest
-
-      - name: Run tests
-        run: tox
-
-      - name: Upload coverage report
-        run: codecov --file test/coverage/reports/coverage.xml --flags {{ matrix.py_version.tox_env }}
